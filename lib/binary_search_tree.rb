@@ -16,7 +16,6 @@ class Node
 end
 
 class Tree
-
   attr_accessor :root
 
   def initialize(array)
@@ -42,10 +41,139 @@ class Tree
     # return 0-level node
     root
   end
+
+  def insert(root, data)
+    return Node.new(data) if root.nil?
+
+    if root.data == data
+      return root
+    elsif root.data < data
+      root.right = insert(root.right, data)
+    else
+      root.left = insert(root.left, data)
+    end
+
+    root
+  end
+
+  # deletes a node
+  def delete(root, data)
+    if root.data == data
+      if root.left.nil? && root.right.nil?
+        return nil
+      elsif root.left.nil? && !root.right.nil?
+        return root.right
+      elsif !root.left.nil? && root.right.nil?
+        return root.left
+      elsif !root.left.nil? && !root.right.nil?
+        right = root.right
+        root = root.left
+        root.right = right
+        return root
+      end
+    end
+
+    if root.data < data
+      root.right = delete(root.right, data)
+    else
+      root.left = delete(root.left, data)
+    end
+
+    root
+  end
+
+  def level_order(&block)
+    queue = []
+    return if @root.nil?
+
+    queue.append(@root)
+    until queue.empty?
+
+      current = queue[0]
+      queue.append(current.left) unless current.left.nil?
+      queue.append(current.right) unless current.right.nil?
+      yield(queue.shift)
+    end
+  end
+
+  def find(data)
+    current = @root
+    until data == current.data
+      if data > current.data
+        current = current.right
+      else
+        current = current.left
+      end
+      return nil if current.nil?
+    end
+
+    current
+  end
+
+  def preorder(root, &block)
+    return if root.nil?
+    
+    yield root
+    preorder(root.left, &block)
+    preorder(root.right, &block)
+  end
+
+  def inorder(root, &block)
+    return if root.nil?
+    
+    inorder(root.left, &block)
+    yield root
+    inorder(root.right, &block)
+  end
+
+  def postorder(root, &block)
+    return if root.nil?
+
+    postorder(root.left, &block)
+    postorder(root.right, &block)
+    yield root
+  end
+
+  # returns the height until a leaf node from a given node.
+  def height(node, height = 0)
+    return height - 1 if node.nil?
+
+    height_left = height(node.left, height + 1)
+    height_right = height(node.right, height + 1)
+
+    height_left > height_right ? height_left : height_right
+  end
+
+  # returns the depth from the tree root to a given node.
+  def depth(node)
+    height(@root) - height(node)
+  end
+
+  def balanced?(node = @root, height = 0)
+    return height - 1 if node.nil?
+
+    height_left = balanced?(node.left, height + 1)
+    height_right = balanced?(node.right, height + 1)
+    return false if height_left == false || height_right == false
+    return false if height_left - height_right > 1
+    return false if height_right - height_left > 1
+
+    return true if node == @root
+    height_left > height_right ? height_left : height_right
+  end
 end
 
 node1 = Node.new(5)
 node2 = Node.new(3)
 
-tree = Tree.new([-50, 1, 2, 3, 4, 5, 7])
-p tree.root
+tree = Tree.new([1, 2, 3, 4, 5, 6, 7])
+
+all_nodes = []
+tree.postorder(tree.root){ |node| all_nodes.append(node.data)}
+p all_nodes
+
+tree.delete(tree.root, 6)
+tree.delete(tree.root, 7)
+tree.delete(tree.root, 5)
+
+p tree.balanced?
