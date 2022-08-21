@@ -177,3 +177,5 @@ tree.delete(tree.root, 7)
 tree.delete(tree.root, 5)
 
 p tree.balanced?
+
+#Todo: MAKE BALANCED? work
