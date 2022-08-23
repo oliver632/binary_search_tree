@@ -20,13 +20,10 @@ class Tree
 
   def initialize(array)
     @array = array
-    @root = build_tree(array, 0, @array.length - 1)
+    @root = build_tree(array.sort.uniq, 0, @array.length - 1)
   end
 
-  def build_tree(array, start_pos = 0, end_pos = array.length - 1)
-    # sort and remove duplicates from array
-    array = @array.sort.uniq
-
+  def build_tree(array, start_pos, end_pos)
     # checks if no children
     return nil if start_pos > end_pos
 
@@ -164,26 +161,59 @@ class Tree
 
   def rebalance
     all_nodes = []
-    level_order{ |node| all_nodes.append(node.data)}
-    all_nodes = all_nodes.sort.uniq
-    @root = build_tree(all_nodes)
+    inorder{ |node| all_nodes.append(node.data)}
+    @root = build_tree(all_nodes.sort.uniq, 0, all_nodes.length-1)
   end
 end
 
 node1 = Node.new(5)
 node2 = Node.new(3)
 
-tree = Tree.new([1, 2, 3, 4, 5, 6, 7])
 
-tree.insert(8)
-tree.insert(9)
+array = Array.new(15) {rand(1..100)}.sort.uniq
+tree = Tree.new(array)
+
 p tree.balanced?
 
-#tree.rebalance
-
 all_nodes = []
-
-tree.inorder() { |node| all_nodes.append(node.data)}
-
+tree.level_order {|node| all_nodes.append(node.data)}
 p all_nodes
 
+all_nodes = []
+tree.preorder {|node| all_nodes.append(node.data)}
+p all_nodes
+
+all_nodes = []
+tree.postorder {|node| all_nodes.append(node.data)}
+p all_nodes
+
+all_nodes = []
+tree.inorder {|node| all_nodes.append(node.data)}
+p all_nodes
+
+p "Inserting"
+tree.insert(101)
+tree.insert(102)
+tree.insert(103)
+
+p tree.balanced?
+
+tree.rebalance
+
+p tree.balanced?
+
+all_nodes = []
+tree.level_order {|node| all_nodes.append(node.data)}
+p all_nodes
+
+all_nodes = []
+tree.preorder {|node| all_nodes.append(node.data)}
+p all_nodes
+
+all_nodes = []
+tree.postorder {|node| all_nodes.append(node.data)}
+p all_nodes
+
+all_nodes = []
+tree.inorder {|node| all_nodes.append(node.data)}
+p all_nodes
