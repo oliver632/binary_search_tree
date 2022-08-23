@@ -23,7 +23,7 @@ class Tree
     @root = build_tree(array, 0, @array.length - 1)
   end
 
-  def build_tree(array, start_pos, end_pos)
+  def build_tree(array, start_pos = 0, end_pos = array.length - 1)
     # sort and remove duplicates from array
     array = @array.sort.uniq
 
@@ -42,22 +42,22 @@ class Tree
     root
   end
 
-  def insert(root, data)
+  def insert(data, root = @root)
     return Node.new(data) if root.nil?
 
     if root.data == data
       return root
     elsif root.data < data
-      root.right = insert(root.right, data)
+      root.right = insert(data, root.right)
     else
-      root.left = insert(root.left, data)
+      root.left = insert(data, root.left)
     end
 
     root
   end
 
   # deletes a node
-  def delete(root, data)
+  def delete(data, root = @root)
     if root.data == data
       if root.left.nil? && root.right.nil?
         return nil
@@ -74,9 +74,9 @@ class Tree
     end
 
     if root.data < data
-      root.right = delete(root.right, data)
+      root.right = delete(data, root.right)
     else
-      root.left = delete(root.left, data)
+      root.left = delete(data, root.left)
     end
 
     root
@@ -110,7 +110,7 @@ class Tree
     current
   end
 
-  def preorder(root, &block)
+  def preorder(root = @root, &block)
     return if root.nil?
     
     yield root
@@ -118,7 +118,7 @@ class Tree
     preorder(root.right, &block)
   end
 
-  def inorder(root, &block)
+  def inorder(root = @root, &block)
     return if root.nil?
     
     inorder(root.left, &block)
@@ -126,7 +126,7 @@ class Tree
     inorder(root.right, &block)
   end
 
-  def postorder(root, &block)
+  def postorder(root = @root, &block)
     return if root.nil?
 
     postorder(root.left, &block)
@@ -161,6 +161,13 @@ class Tree
     return true if node == @root
     height_left > height_right ? height_left : height_right
   end
+
+  def rebalance
+    all_nodes = []
+    level_order{ |node| all_nodes.append(node.data)}
+    all_nodes = all_nodes.sort.uniq
+    @root = build_tree(all_nodes)
+  end
 end
 
 node1 = Node.new(5)
@@ -168,8 +175,15 @@ node2 = Node.new(3)
 
 tree = Tree.new([1, 2, 3, 4, 5, 6, 7])
 
+tree.insert(8)
+tree.insert(9)
+p tree.balanced?
+
+#tree.rebalance
+
 all_nodes = []
-tree.postorder(tree.root){ |node| all_nodes.append(node.data)}
+
+tree.inorder() { |node| all_nodes.append(node.data)}
+
 p all_nodes
 
-p tree.balanced?
