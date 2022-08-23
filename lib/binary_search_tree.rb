@@ -172,10 +172,4 @@ all_nodes = []
 tree.postorder(tree.root){ |node| all_nodes.append(node.data)}
 p all_nodes
 
-tree.delete(tree.root, 6)
-tree.delete(tree.root, 7)
-tree.delete(tree.root, 5)
-
 p tree.balanced?
-
-#Todo: MAKE BALANCED? work
