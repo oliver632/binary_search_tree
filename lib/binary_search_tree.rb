@@ -183,7 +183,7 @@ all_nodes = []
 tree.preorder {|node| all_nodes.append(node.data)}
 p all_nodes
 
-all_nodes = []
+all_nodes = [] 
 tree.postorder {|node| all_nodes.append(node.data)}
 p all_nodes
 
